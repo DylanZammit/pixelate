@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from colorthief import ColorThief
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -18,13 +19,14 @@ def get_closest(c, cols, ord=2):
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--ncol', default=8, type=int, help='Num of cols')
-parser.add_argument('--pixize', default=30, type=int, help='pixelsize')
+parser.add_argument('--pixize', default=30, type=int, help='pixel size')
+parser.add_argument('--image', default='millie.jpg', type=str, help='image path')
 args = parser.parse_args()
 
 ncol = args.ncol
 pixel_size = args.pixize
 
-img_path = 'millie.jpg'
+img_path = args.image
 orig = mpimg.imread(img_path)
 color_thief = ColorThief(img_path)
 
