@@ -1,10 +1,8 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import numpy as np
-from IPython import embed
-import pdb
-
 from colorthief import ColorThief
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import numpy as np
+import argparse
 
 def get_closest(c, cols, ord=2):
     closest = None
@@ -15,15 +13,20 @@ def get_closest(c, cols, ord=2):
         if d < mindist:
             mindist = d
             closest = col
-
     return closest
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--ncol', default=8, type=int, help='Num of cols')
+parser.add_argument('--pixize', default=30, type=int, help='pixelsize')
+args = parser.parse_args()
+
+ncol = args.ncol
+pixel_size = args.pixize
 
 img_path = 'millie.jpg'
 orig = mpimg.imread(img_path)
 color_thief = ColorThief(img_path)
-
-ncol = 8
-pixel_size = 30
 
 w, h, _ = orig.shape
 
