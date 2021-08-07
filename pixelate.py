@@ -23,6 +23,7 @@ parser.add_argument('--ncol', default=8, type=int, help='Num of cols [def=8]')
 parser.add_argument('--pixize', default=30, type=int, help='pixel size [def=30]')
 parser.add_argument('--image', default='millie.jpg', type=str, help='image path')
 parser.add_argument('--save', action='store_true', help='save image') 
+parser.add_argument('--noplot', action='store_true', help='supress plot') 
 args = parser.parse_args()
 
 ncol = args.ncol
@@ -48,8 +49,6 @@ for n in range(N):
         startx, starty = n*pixel_size, m*pixel_size
         batch = orig[startx:startx+pixel_size, starty:starty+pixel_size, :]
         mean_col = np.mean(batch, axis=(0, 1)).astype(np.uint8)
-        #batch_thief = ColorThief(batch)
-        #mean_col = color_thief.get_color(quality=1)
 
         closest = get_closest(mean_col, cols)
 
@@ -57,12 +56,14 @@ for n in range(N):
 
 pixelated = pixelated.astype(np.uint8)
 
-fig, ax = plt.subplots(1, 2)
-ax[0].axis('off')
-ax[1].axis('off')
-ax[0].imshow(orig)
-ax[1].imshow(pixelated)
-plt.show()
+if not args.noplot:
+    fig, ax = plt.subplots(1, 2)
+    plt.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
+    ax[0].axis('off')
+    ax[1].axis('off')
+    ax[0].imshow(orig)
+    ax[1].imshow(pixelated)
+    plt.show()
 
 if args.save:
     path = os.path.dirname(args.image)
