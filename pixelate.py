@@ -23,7 +23,6 @@ parser.add_argument('--ncol', default=8, type=int, help='Num of cols [def=8]')
 parser.add_argument('--pixize', default=30, type=int, help='pixel size [def=30]')
 parser.add_argument('--image', default='nature.jpg', type=str, help='image path')
 parser.add_argument('--save', action='store_true', help='save image') 
-parser.add_argument('--noplot', action='store_true', help='supress plot') 
 args = parser.parse_args()
 
 ncol = args.ncol
@@ -42,8 +41,8 @@ cols = [list(x) for x in color_thief.get_palette(color_count=ncol)]
 N, M = w//pixel_size, h//pixel_size
 
 pixelated = np.zeros(orig.shape)
-for n in range(N):
-    for m in range(M):
+for n in range(N+1):
+    for m in range(M+1):
         print(f'{int((n*M+m+1)/(N*M)*100)}%', end='\r')
         startx, starty = n*pixel_size, m*pixel_size
         batch = orig[startx:startx+pixel_size, starty:starty+pixel_size, :]
@@ -55,7 +54,7 @@ for n in range(N):
 
 pixelated = pixelated.astype(np.uint8)
 
-if not args.noplot:
+if not args.save:
     fig, ax = plt.subplots(1, 2)
     plt.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
     ax[0].axis('off')

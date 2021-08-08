@@ -24,7 +24,6 @@ parser.add_argument('--alpha', default=0, type=int, help='%% of normal until pix
 parser.add_argument('--avgpix', default=10, type=int, help='avg pixel size [def=10]')
 parser.add_argument('--image', default='millie.jpg', type=str, help='image path')
 parser.add_argument('--save', action='store_true', help='save image') 
-parser.add_argument('--noplot', action='store_true', help='supress plot') 
 args = parser.parse_args()
 
 alpha = args.alpha/100
@@ -36,7 +35,8 @@ orig = mpimg.imread(img_path)
 color_thief = ColorThief(img_path)
 if ncol: cols = [list(x) for x in color_thief.get_palette(color_count=ncol)]
 
-h, w, _ = orig.shape
+h, w, rgb = orig.shape
+if rgb == 4: orig = orig[:,:,:3]
 
 N = int(w*(1-alpha)/A)
 
@@ -66,7 +66,7 @@ for n, batch_size in enumerate(batch_sizes):
     
 pixelated = pixelated.astype(np.uint8)
 
-if not args.noplot:
+if not args.save:
     fig, ax = plt.subplots(1, 2)
     plt.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
     ax[0].axis('off')
