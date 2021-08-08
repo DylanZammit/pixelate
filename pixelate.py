@@ -46,6 +46,7 @@ N, M = w//pixel_size, h//pixel_size
 pixelated = np.zeros(orig.shape)
 for n in range(N):
     for m in range(M):
+        print(f'{int((n*M+m+1)/(N*M)*100)}%', end='\r')
         startx, starty = n*pixel_size, m*pixel_size
         batch = orig[startx:startx+pixel_size, starty:starty+pixel_size, :]
         mean_col = np.mean(batch, axis=(0, 1)).astype(np.uint8)
