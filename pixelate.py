@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--ncol', default=8, type=int, help='Num of cols [def=8]')
 parser.add_argument('--pixize', default=30, type=int, help='pixel size [def=30]')
-parser.add_argument('--image', default='millie.jpg', type=str, help='image path')
+parser.add_argument('--image', default='nature.jpg', type=str, help='image path')
 parser.add_argument('--save', action='store_true', help='save image') 
 parser.add_argument('--noplot', action='store_true', help='supress plot') 
 args = parser.parse_args()
@@ -37,9 +37,7 @@ w, h, _ = orig.shape
 
 pixel_size = pixel_size+min([w%pixel_size, h%pixel_size])
 
-cols = color_thief.get_palette(color_count=ncol)
-cols = [list(x) for x in cols]
-
+cols = [list(x) for x in color_thief.get_palette(color_count=ncol)]
 
 N, M = w//pixel_size, h//pixel_size
 
