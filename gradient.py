@@ -19,39 +19,51 @@ def get_closest(c, cols, ord=2):
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--ncol', default=8, type=int, help='Num of cols [def=8]')
-parser.add_argument('--pixize', default=30, type=int, help='pixel size [def=30]')
-parser.add_argument('--image', default='nature.jpg', type=str, help='image path')
+parser.add_argument('--ncol', default=0, type=int, help='Num of cols [def=0]')
+parser.add_argument('--alpha', default=0, type=int, help='%% of normal until pixelating [def=0]')
+parser.add_argument('--avgpix', default=10, type=int, help='avg pixel size [def=10]')
+parser.add_argument('--image', default='millie.jpg', type=str, help='image path')
 parser.add_argument('--save', action='store_true', help='save image') 
 args = parser.parse_args()
 
+alpha = args.alpha/100
+A = args.avgpix
 ncol = args.ncol
-pixel_size = args.pixize
 
 img_path = args.image
 orig = mpimg.imread(img_path)
 color_thief = ColorThief(img_path)
+if ncol: cols = [list(x) for x in color_thief.get_palette(color_count=ncol)]
 
-w, h, _ = orig.shape
+h, w, rgb = orig.shape
+if rgb == 4: orig = orig[:,:,:3]
 
-pixel_size = pixel_size+min([w%pixel_size, h%pixel_size])
+N = int(w*(1-alpha)/A)
 
-cols = [list(x) for x in color_thief.get_palette(color_count=ncol)]
-
-N, M = w//pixel_size, h//pixel_size
+a = 2*((1-alpha)*w-N)/(N*(N-1))
 
 pixelated = np.zeros(orig.shape)
-for n in range(N+1):
-    for m in range(M+1):
-        print(f'{int((n*M+m+1)/(N*M)*100)}%', end='\r')
-        startx, starty = n*pixel_size, m*pixel_size
-        batch = orig[startx:startx+pixel_size, starty:starty+pixel_size, :]
+
+batch_sizes = [int(a*i+1)+1 for i in range(N)]
+
+starty = int(w*alpha)
+pixelated[:, :starty, :] = orig[:, :starty, :]
+for n, batch_size in enumerate(batch_sizes):
+    startx = 0
+    M = int(h/batch_size)+1
+    for m in range(M):
+        stopx, stopy = startx+batch_size, starty+batch_size
+        batch = orig[startx:stopx, starty:stopy, :]
         mean_col = np.mean(batch, axis=(0, 1)).astype(np.uint8)
 
-        closest = get_closest(mean_col, cols)
+        if ncol: closest = get_closest(mean_col, cols)
 
-        pixelated[startx:startx+pixel_size, starty:starty+pixel_size, :] = closest
+        pixelated[startx:stopx, starty:stopy, :] = closest if ncol else mean_col
+        startx = stopx
+    starty = stopy
 
+    print(f'{int((n+1)/N*100)}%', end='\r')
+    
 pixelated = pixelated.astype(np.uint8)
 
 if not args.save:
